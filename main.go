@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/rand"
+	"fmt"
 	"io/ioutil"
 	"os"
 )
@@ -14,6 +15,11 @@ func Shred(path string) error {
 	fileInfo, err := os.Stat(path)
 	if err != nil {
 		return err
+	}
+
+	// Check if the file is read-only
+	if fileInfo.Mode().Perm()&0200 == 0 {
+		return fmt.Errorf("file is read-only: %s", path)
 	}
 
 	fileSize := fileInfo.Size()
